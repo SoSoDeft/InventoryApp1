@@ -1,56 +1,52 @@
 package com.example.android.inventoryapp;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Display;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.example.android.inventoryapp.data.InventoryDbHelper;
-
 import com.example.android.inventoryapp.data.InventoryContract.InventoryEntry;
+import com.example.android.inventoryapp.data.InventoryDbHelper;
 
 public class DisplayActivity extends AppCompatActivity {
 
-    private InventoryDbHelper mDbHelper;
     TextView displayView;
+    private InventoryDbHelper mDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display);
 
-         displayView = (TextView) findViewById(R.id.text_view_inventory);
+        displayView = (TextView) findViewById(R.id.text_view_inventory);
 
         mDbHelper = new InventoryDbHelper(this);
-
 
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         displayDatabaseInfo();
     }
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate menu from menu_display
         getMenuInflater().inflate(R.menu.menu_display, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch(item.getItemId()){
-
+        switch (item.getItemId()) {
+            // When user selects add product answer, user taken to editor activity by intent
             case R.id.action_add_product:
                 Intent intent = new Intent(DisplayActivity.this, EditorActivity.class);
                 startActivity(intent);
@@ -59,18 +55,18 @@ public class DisplayActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void displayDatabaseInfo(){
+    private void displayDatabaseInfo() {
         InventoryDbHelper mDbHelper = new InventoryDbHelper(this);
 
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         String[] projection = {
-           InventoryEntry._ID,
-           InventoryEntry.COLUMN_PRODUCT_NAME,
-           InventoryEntry.COLUMN_PRODUCT_PRICE,
-           InventoryEntry.COLUMN_PRODUCT_QUANTITY,
-           InventoryEntry.COLUMN_PRODUCT_SUPPLIER_NAME,
-           InventoryEntry.COLUMN_PRODUCT_SUPPLIER_PHONE_NUMBER
+                InventoryEntry._ID,
+                InventoryEntry.COLUMN_PRODUCT_NAME,
+                InventoryEntry.COLUMN_PRODUCT_PRICE,
+                InventoryEntry.COLUMN_PRODUCT_QUANTITY,
+                InventoryEntry.COLUMN_PRODUCT_SUPPLIER_NAME,
+                InventoryEntry.COLUMN_PRODUCT_SUPPLIER_PHONE_NUMBER
         };
 
         //Create cursor to represent rows and columns of data
@@ -84,13 +80,13 @@ public class DisplayActivity extends AppCompatActivity {
                 null
         );
 
-        try{
+        try {
 
             displayView.setText(cursor.getCount() + " product(s) in table. \n\n");
             displayView.append(InventoryEntry._ID + " - " +
                     InventoryEntry.COLUMN_PRODUCT_NAME + " - " + InventoryEntry.COLUMN_PRODUCT_PRICE + " - "
                     + InventoryEntry.COLUMN_PRODUCT_QUANTITY + " - " + InventoryEntry.COLUMN_PRODUCT_SUPPLIER_NAME
-                    + " - " + InventoryEntry.COLUMN_PRODUCT_SUPPLIER_PHONE_NUMBER +"\n");
+                    + " - " + InventoryEntry.COLUMN_PRODUCT_SUPPLIER_PHONE_NUMBER + "\n");
 
             //Get index of column
             int idColumnIndex = cursor.getColumnIndex(InventoryEntry._ID);
@@ -101,23 +97,22 @@ public class DisplayActivity extends AppCompatActivity {
             int supplierNumberColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_PRODUCT_SUPPLIER_PHONE_NUMBER);
 
 
-
             //Loop thorough all rows that are returned in cursor
-            while(cursor.moveToNext()){
+            while (cursor.moveToNext()) {
                 int currentId = cursor.getInt(idColumnIndex);
                 String currentName = cursor.getString(nameColumnIndex);
                 String currentPrice = cursor.getString(priceColumnIndex);
-                int currentQuantity = cursor.getInt(quantityColumnIndex );
-                String currentSupplier= cursor.getString(supplierNameColumnIndex);
+                int currentQuantity = cursor.getInt(quantityColumnIndex);
+                String currentSupplier = cursor.getString(supplierNameColumnIndex);
                 String currentSupplierNumber = cursor.getString(supplierNumberColumnIndex);
 
 
-                //Add to textview
-                displayView.append("\n" + currentId + " - " + currentName + " - " +  "$" + currentPrice
-                + " - " + currentQuantity + " - " + currentSupplier + " - " + currentSupplierNumber);
+                //Add to TextView
+                displayView.append("\n" + currentId + " - " + currentName + " - " + "$" + currentPrice
+                        + " - " + currentQuantity + " - " + currentSupplier + " - " + currentSupplierNumber);
             }
         } finally {
-            cursor.close();
+            cursor.close(); // Remember to close access to cursor when finished
         }
 
     }
